@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+		"experimentalDecorators": true,
+    "target": "es6",
+    "lib": ["esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": "./",
+    "rootDir": "./",
+    "outDir": "./build/dist"
+  },
+  "include": [
+    "./"
+  ],
+  "exclude": [
+    "./build/**/*"
+  ]
+}
