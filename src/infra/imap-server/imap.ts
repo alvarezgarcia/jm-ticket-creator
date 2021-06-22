@@ -8,7 +8,7 @@ import { imap as imapConfig } from '../../config';
 const { simpleParser } = mailparser;
 
 if (!imapConfig.user || !imapConfig.password || !imapConfig.host) {
-  throw new Error('Incomplete IMAP configuration please check .env file');
+  throw new Error('Configuración para IMAP incompleta, verifique archivo .env');
 }
 
 const config: ImapSimpleOptions = {
@@ -37,18 +37,26 @@ class ImapServer implements IImapServer {
     await this.connection.openBox(inboxName);
   };
 
+  async search(): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      const searchCriteria = ['UNSEEN'];
+      const fetchOptions = { bodies: ['HEADER', 'TEXT', ''], struct: true };
+
+      let messages: any;
+      const timeout = setTimeout(() => {
+        if (messages) return;
+        reject(new Error(`Tiempo excedido (${imapConfig.searchTimeout}s) para buscar correos`));
+      }, imapConfig.searchTimeout * 1000);
+
+      messages = await this.connection.search(searchCriteria, fetchOptions);
+      resolve(messages);
+    });
+  }
+
   async findAll(): Promise<any[]> {
     await this.openBox('INBOX');
-    const searchCriteria = ['UNSEEN'];
-    const fetchOptions = { bodies: ['HEADER', 'TEXT', ''], struct: true };
-    let messages: any;
 
-    setTimeout(() => {
-      if (messages) return;
-      throw new Error(`Tiempo excedido (${imapConfig.searchTimeout}s) para buscar correos`);
-    }, imapConfig.searchTimeout * 1000);
-
-    messages = await this.connection.search(searchCriteria, fetchOptions);
+    const messages = await this.search();
 		const ops = messages.map((m: any) => {
 			const all = _.find(m.parts, { "which": "" })
       const id = m.attributes.uid;

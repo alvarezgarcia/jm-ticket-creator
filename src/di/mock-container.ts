@@ -31,12 +31,22 @@ class ImapServer implements IImapServer {
 						}
 					]
 				},
-				subject: '[Proyecto de Prueba - #329] Problemas en moodle',
+				subject: '[Proyecto de Prueba - #364] Problemas en moodle',
 				text: 'Probé cada uno de esos pasos y no tengo resultados positivos',
 				attachments: [
 					{
-						filename: 'Imagen.jpg',
+						filename: 'Imagen-1.jpg',
 						contentType: 'image/jpeg',
+						content: Buffer.alloc(256)
+					},
+					{
+						filename: 'Imagen-2.jpg',
+						contentType: 'image/jpeg',
+						content: Buffer.alloc(4718593)
+					},
+					{
+						filename: 'Imagen-3.jpg',
+						contentType: 'image/png',
 						content: Buffer.alloc(256)
 					}
 				]
