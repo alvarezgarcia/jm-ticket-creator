@@ -14,6 +14,15 @@ import { container } from './src/di/container';
 // import { container } from './src/di/mock-container';
 import { telegram  as telegramConfig } from './src/config';
 
+
+import {
+	log,
+	consoleLog,
+	telegramLog,
+	getUnseenEmails,
+	waitFor,
+} from './src/misc';
+
 const debugAndSend = async (status: string) => {
 	console.log(status);
 
@@ -44,11 +53,6 @@ const debugAndSend = async (status: string) => {
 	return axios(options);
 }
 
-const getUnseenEmails = () => {
-  const es = container.get<EmailService>(DISymbols.EmailService);
-	return es.findAll();
-};
-
 const createIssue = (data: Email) => {
 	const is = container.get<IssueService>(DISymbols.IssueService);
 
@@ -77,19 +81,19 @@ const moveMessage = async (emailId: string, boxName: string) => {
 }
 
 const end = async (exitCode: number) => {
-	await debugAndSend(`\u{1F44B} Finalizada conversión de mails en tareas`);
+	await log(`\u{1F44B} Finalizada conversión de mails en tareas`);
 	process.exit(exitCode);
 };
 
 const start = async () => {
-	await debugAndSend('\u{1F44B} Iniciando conversión de mails en tareas');
+	await log('\u{1F44B} Iniciando ejecución');
 
 	let emails: Email[] = [];
 	try {
 		emails = await getUnseenEmails();
-		await debugAndSend(`Encontrados ${emails.length} mails`);
+		await log(`${emails.length} correos para ser convertidos en tareas`);
 	} catch (e) {
-		await debugAndSend(e.message);
+		await log(e.message);
 		return end(-1);
 	}
 
@@ -100,32 +104,33 @@ const start = async () => {
 
 	let destInbox;
 	for (const mail of emails) {
-		console.log('\n------------------ Cut Here ------------------');
-		console.log(`Procesando ${mail.id}`);
+		await waitFor(1000);
+		consoleLog('\n------------------ Cut Here ------------------');
+		consoleLog(`Procesando ${mail.id}`);
 		try {
 			await createIssue(mail);
 			destInbox = 'Procesados';
 			status.ok++;
 
-			console.log(`Procesado ${mail.id}`);
+			consoleLog(`Procesado ${mail.id}`);
 		} catch (e) {
-			console.log(mail);
+			consoleLog(JSON.stringify(mail));
 
 			destInbox = 'No Procesados';
 			status.failed++;
 
-			console.log(`No Procesado ${mail.id}`);
-			await debugAndSend(`Imposibe procesar correctamente ${mail.id} - ${mail.subject}`.replace('#', ''));
+			await log(`Imposibe procesar correctamente ${mail.id} - ${mail.subject}`.replace('#', ''));
 		} finally {
 			await moveMessage(mail.id, destInbox as string);
 		}
-		console.log(`OK = ${status.ok}, Fallidos = ${status.failed}, Acumulados = ${status.ok + status.failed}, Totales = ${emails.length}`);
+
+		await consoleLog(`Progreso:\nOK = ${status.ok}, Fallidos = ${status.failed}, Acumulados = ${status.ok + status.failed}, Totales = ${emails.length}`);
 	}
 
-	console.log('\n------------------ Cut Here ------------------');
+	consoleLog('\n------------------ Cut Here ------------------');
 
-	const stats = `OK = ${status.ok}, Fallidos = ${status.failed}, Totales = ${emails.length}`;
-	await debugAndSend(stats);
+	const stats = `Finalizado:\nOK = ${status.ok}, Fallidos = ${status.failed}, Totales = ${emails.length}`;
+	await log(stats);
 
 	return end(0);
 }

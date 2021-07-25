@@ -5,6 +5,8 @@ import { DISymbols } from './symbols';
 
 import { Imap } from '../infra/imap-server/imap';
 import { Redmine } from '../infra/redmine-server/redmine';
+import { CommonLogger } from '../infra/logger/common-logger';
+import { TelegramLogger } from '../infra/logger/telegram-logger';
 
 import { EmailRepository  } from '../infra/imap-server/repos/email';
 import { EmailService } from '../app/email';
@@ -28,5 +30,16 @@ container.bind(DISymbols.EmailService).to(EmailService);
 
 container.bind(DISymbols.IssueRepository).to(IssueRepository);
 container.bind(DISymbols.IssueService).to(IssueService);
+
+container
+  .bind(DISymbols.CommonLogger)
+  .to(CommonLogger)
+  .inSingletonScope();
+
+container
+  .bind(DISymbols.TelegramLogger)
+  .to(TelegramLogger)
+  .inSingletonScope();
+
 
 export { container };

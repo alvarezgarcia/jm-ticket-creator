@@ -7,6 +7,9 @@ const DISymbols = {
 
 	IssueRepository: Symbol.for('IssueRepository'),
 	IssueService: Symbol.for('IssueService'),
+
+	CommonLogger: Symbol.for('CommonLogger'),
+	TelegramLogger: Symbol.for('TelegramLogger'),
 };
 
 export { DISymbols };

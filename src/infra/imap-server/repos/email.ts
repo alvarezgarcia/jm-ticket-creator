@@ -21,10 +21,10 @@ export class EmailRepository implements IEmailRepository {
 
 		return found.map((f: any) => {
 			const email: any = {
-				id: f.headers.get('imap-id'),
-				from: f.from.value[0].address,
+				id: f.id,
+				from: f.from,
 				subject: f.subject,
-				body: f.text || sanitize(f.html),
+				body: sanitize(f.body),
 			};
 
 			if (f.attachments && f.attachments.length) {

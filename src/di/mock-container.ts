@@ -10,7 +10,6 @@ import { EmailRepository  } from '../infra/imap-server/repos/email';
 import { EmailService } from '../app/email';
 import { IssueRepository } from '../infra/redmine-server/repos/issue';
 import { IssueService } from '../app/issue';
-import { isContinueStatement } from 'typescript';
 
 class ImapServer implements IImapServer {
 	openBox = (inboxName: string) => Promise.resolve();
